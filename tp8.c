@@ -1,10 +1,12 @@
-#include <stdio.h>
+	#include <stdio.h>
 #include <stdlib.h>
 #define TAM 20
+
+//	
 int cuantas_piezas(int max) {
 	int n;
 	do {
-		printf("Cu�ntas piezas ingresar�? ");
+		printf("Cuántas piezas ingresará? ");
 		scanf("%d", &n);
 	} while (n < 0 || n > max);
 	return n;
@@ -37,26 +39,9 @@ int main (void) {
 	cargar_piezas(diametros, n);
 	int n_rectificar = contar(rectificable, max, diametros, n);
 	float *p_rectificables = reserva_memoria(n_rectificar);
-	if(p_rectificables!=NULL){
-		printf("Se reservo memoria para rectificables con exito. \n");
-		
-	}
-	else{
-		printf("Error al reservar memoria");
-		return 0;
-	}
 	segregar(rectificable, max, diametros, n, p_rectificables);
 	int n_rechazar = contar(rechazada, min, diametros, n);
 	float *p_rechazadas = reserva_memoria(n_rechazar);
-	if(p_rechazadas!=NULL){
-		printf("Se reservo memoria para rechazadas con exito. \n");
-		
-	}
-	else{
-		printf("Error al reservar memoria");
-		return 0;
-	}
-	
 	segregar(rechazada, min, diametros, n, p_rechazadas);
 	
 	if(n_rectificar==0)
@@ -77,10 +62,15 @@ int main (void) {
 
 void cargar_piezas(float *diametros, int n){
 
-	for(int i=0; i<n;i++){
-		printf("Ingrese Diametro %d: \n",i+1);
-		scanf("%f",&(*(diametros+i)));
-	};
+	for(int i=0;i<n;i++) {
+		do {
+			printf("Ingrese Diámetro %d (> 0): ", i + 1);
+			scanf("%f", diametros + i);
+			if (*(diametros + i) <= 0) {
+				printf("Error: El diámetro debe ser un número positivo.\n");
+			}
+		} while (*(diametros + i) <= 0);
+	}
 
 }
 
@@ -94,11 +84,15 @@ int contar(int (*func)(float , float), float limite, float *vec, int cant){
 }
 	
 float* reserva_memoria(int cantidad){
-	return malloc(cantidad*sizeof(float));
+	 float *ptr =malloc(cantidad*sizeof(float));
+	if (ptr == NULL) {
+		printf("Error, No se pudo asignar memoria\n");
+		exit(EXIT_FAILURE); 
+	}
+	return ptr;
 }
 
 void segregar(int (*func)(float, float), float limite, float *vec, int cant, float *vec_carga){
-	int t;
 	for(int i=0; i<cant; i++){
 		if(func(*(vec+i),limite)){
 			*(vec_carga)=*(vec+i);
@@ -110,6 +104,6 @@ void segregar(int (*func)(float, float), float limite, float *vec, int cant, flo
 void mostrar_piezas(char *texto, float *vec,int cant){
 	printf("\n____%s : %d ____\n",texto,cant);
 	for(int i=0; i<cant;i++){
-		printf("%.2f",*(vec+i));
+		printf("%.2f \n",*(vec+i));
 	}
 }
